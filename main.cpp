@@ -76,6 +76,17 @@ struct dint {
         result.x = resultX;
         return result;
     }
+
+    long long operator%(long long other) {
+        long long rem = 0;
+        long long base = 1;
+        for (long long i = 0; i < n; i++) {
+            rem = (rem + x[i] * base) % other;
+            base = (base << 8) % other;
+        }
+
+        return rem;
+    }
 };
 
 int main() {
@@ -83,6 +94,6 @@ int main() {
     dint b = 9223372036854775807L;
     a = a + b;
     a = a + 2;
-    cout << a.to_string() << endl;
+    cout << (a%10) << endl;
     return 0;
 }
