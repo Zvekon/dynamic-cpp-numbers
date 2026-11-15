@@ -20,7 +20,30 @@ struct dint {
         }
     }
 
-    dint(unsigned char *x, long long n) {
+    dint(const dint &other) : n(other.n), x(new unsigned char[other.n]) {
+        for (long long i = 0; i < n; i++) {
+            x[i] = other.x[i];
+        }
+    }
+
+    dint &operator=(const dint &other) {
+        if (this != &other) {
+            unsigned char *newX = new unsigned char[other.n];
+            for (long long i = 0; i < other.n; i++) {
+                newX[i] = other.x[i];
+            }
+            delete[] x;
+            n = other.n;
+            x = newX;
+        }
+        return *this;
+    }
+
+    ~dint() {
+        delete[] x;
+    }
+
+    dint(const unsigned char *x, long long n) {
         this->n = n;
         this->x = new unsigned char[n];
         for (long long i = 0; i < n; i++) {
@@ -60,7 +83,7 @@ struct dint {
     dint operator+(dint other) {
         // cout << "Adding: " << this->to_string() << " + " << other.to_string() << endl;
         long long maxN = max(this->n, other.n);
-        unsigned char *resultX = new unsigned char[maxN];
+        unsigned char *resultX = new unsigned char[maxN + 1];
         unsigned char carry = 0;
 
         for (long long i = 0; i < maxN; i++) {
@@ -123,6 +146,7 @@ struct dint {
         for (long long i = 0; i < resultN; i++) {
             result.x[i] = resultX[i];
         }
+        delete[] resultX;
         return result;
 
     }
@@ -147,7 +171,7 @@ struct dint {
 int main() {
     dint a = LONG_LONG_MAX;
     // dint b = LONG_LONG_MAX;
-    for (int i = 0; i < 200; i++) {
+    for (int i = 0; i < 100000; i++) {
         a = a + a;
     }
     // a = a + 2;
