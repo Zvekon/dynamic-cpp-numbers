@@ -28,16 +28,29 @@ struct dint {
         }
     }
 
-    string to_string() {
-        string s = "";
-        for (long long i = 0; i < n; i++) {
-            string c = "";
-            for (int j = 7; j >= 0; j--) {
-                c += ((x[i] >> j) & 1) ? '1' : '0';
-            }
-            s = c + s;
+    string to_string(char base = 10) {
+        if (base < 2 || base > 36) {
+            throw invalid_argument("Base must be between 2 and 36");
         }
-        return s;
+
+        if (n == 0) {
+            return "0";
+        }
+
+        string result = "";
+        dint temp(*this);
+        long long i = -1;
+        do {
+            i++;
+            char remainder = temp % base;
+            char digit = (char)(remainder < 10 ? '0' + remainder : 'A' + (remainder - 10));
+            if (i % 3 == 0 && temp > 0) {
+                result = " " + result;
+            }
+            result = digit + result;
+            temp = temp / base;
+        } while (temp > 0);
+        return result;
     }
 
     dint operator+(long long other) {
@@ -45,7 +58,7 @@ struct dint {
     }
 
     dint operator+(dint other) {
-        cout << "Adding: " << this->to_string() << " + " << other.to_string() << endl;
+        // cout << "Adding: " << this->to_string() << " + " << other.to_string() << endl;
         long long maxN = max(this->n, other.n);
         unsigned char *resultX = new unsigned char[maxN];
         unsigned char carry = 0;
@@ -59,7 +72,7 @@ struct dint {
             if (i < other.n) {
                 sum += other.x[i];
             }
-            cout << "Index: " << i << ", Sum: " << sum << ", Carry: " << static_cast<int>(carry) << endl;
+            // cout << "Index: " << i << ", Sum: " << sum << ", Carry: " << static_cast<int>(carry) << endl;
 
             resultX[i] = static_cast<unsigned char>(sum % 256);
             carry = static_cast<unsigned char>(sum / 256);
@@ -87,13 +100,57 @@ struct dint {
 
         return rem;
     }
+
+    dint operator/(long long other) {
+        long long resultN = this->n;
+        long long div = 0;
+
+        unsigned char *resultX = new unsigned char[resultN];
+        for (int i = resultN - 1; i >= 0; i--) {
+            div = (div << 8) + x[i];
+            resultX[i] = div / other;
+            div %= other;
+        }
+
+        while (resultN > 1 && resultX[resultN - 1] == 0) {
+            resultN--;
+        }
+
+        dint result(0);
+        delete[] result.x;
+        result.n = resultN;
+        result.x = new unsigned char[resultN];
+        for (long long i = 0; i < resultN; i++) {
+            result.x[i] = resultX[i];
+        }
+        return result;
+
+    }
+
+    char operator>(long long other) {
+        return *this > dint(other);
+    }
+
+    char operator>(dint other) {
+        if (this->n != other.n) {
+            return this->n > other.n;
+        }
+        for (long long i = this->n - 1; i >= 0; i--) {
+            if (this->x[i] != other.x[i]) {
+                return this->x[i] > other.x[i];
+            }
+        }
+        return 0;
+    }
 };
 
 int main() {
-    dint a = 9223372036854775807L;
-    dint b = 9223372036854775807L;
-    a = a + b;
-    a = a + 2;
-    cout << (a%10) << endl;
+    dint a = LONG_LONG_MAX;
+    // dint b = LONG_LONG_MAX;
+    for (int i = 0; i < 400; i++) {
+        a = a + a;
+    }
+    // a = a + 2;
+    cout << a.to_string() << endl;
     return 0;
 }
