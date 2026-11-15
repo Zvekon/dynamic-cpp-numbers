@@ -76,6 +76,20 @@ struct dint {
         return result;
     }
 
+    string size() {
+        long long s = this->n;
+        if (s >= 1000000000) {
+            return std::to_string(s/1000000000.0) + " GB";
+        }
+        if (s >= 1000000) {
+            return std::to_string(s/1000000.0) + " MB";
+        }
+        if (s >= 1000) {
+            return std::to_string(s/1000.0) + " KB";
+        }
+        return std::to_string(s) + " B";
+    }
+
     dint operator+(long long other) {
         return *this + dint(other);
     }
@@ -169,12 +183,14 @@ struct dint {
 };
 
 int main() {
-    dint a = LONG_LONG_MAX;
+    // dint a = LONG_LONG_MAX;
+    dint a = 256;
     // dint b = LONG_LONG_MAX;
-    for (int i = 0; i < 100000; i++) {
-        a = a + a;
-    }
+    // for (int i = 0; i < 10000; i++) {
+    //     a = a + a;
+    // }
     // a = a + 2;
     cout << a.to_string() << endl;
+    cout << a.size() << endl;
     return 0;
 }
