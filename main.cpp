@@ -147,7 +147,7 @@ struct dint {
 int main() {
     dint a = LONG_LONG_MAX;
     // dint b = LONG_LONG_MAX;
-    for (int i = 0; i < 400; i++) {
+    for (int i = 0; i < 200; i++) {
         a = a + a;
     }
     // a = a + 2;
